@@ -1,0 +1,6 @@
+@ToDoTask_SchedulerAppTest_HostAddress = http://localhost:5102
+
+GET {{ToDoTask_SchedulerAppTest_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
