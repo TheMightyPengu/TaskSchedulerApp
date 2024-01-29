@@ -32,6 +32,10 @@ namespace ToDoTask_SchedulerAppTest.Repository
         {
             return _context.Users.OrderBy(u => u.Uid).ToList();
         }
+        public ICollection<Users> GetUsersByTid(int tid)
+        {
+            return _context.TasksGiven.Where(tg => tg.Task.Tid == tid).Select(TasksGiven => TasksGiven.User).ToList();
+        }
 
         public bool UserExistsById(int uid)
         {
@@ -44,6 +48,22 @@ namespace ToDoTask_SchedulerAppTest.Repository
         public bool UserExistsByFullname(string fullName)
         {
             return _context.Users.Any(u => u.Fullname == fullName);
+        }
+        public bool UserExistsByTid(int tid)
+        {
+            return _context.Tasks.Any(t => t.Tid == tid);
+        }
+
+        public bool CreateUser(Users user)
+        {
+            _context.Add(user);
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
         }
     }
 }

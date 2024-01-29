@@ -3,6 +3,7 @@ using ToDoTask_SchedulerAppTest;
 using ToDoTask_SchedulerAppTest.Data;
 using ToDoTask_SchedulerAppTest.Interfaces;
 using ToDoTask_SchedulerAppTest.Repository;
+using ToDoTask_SchedulerAppTest.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +13,10 @@ builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
 builder.Services.AddScoped<IUsersRepository , UsersRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-//builder.Services.AddScoped<ITasksRepository, TasksRepository>();
+builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<IRemindersRepository, RemindersRepository>();
+builder.Services.AddScoped<RemindersServices>();
+
 //builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

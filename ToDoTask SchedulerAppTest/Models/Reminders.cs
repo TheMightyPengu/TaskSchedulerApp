@@ -7,7 +7,7 @@ namespace ToDoTask_SchedulerAppTest.Models
         [Key]
         public int Rid { get; set; }
         public DateTime ReminderDate { get; set; }
-        public Users Ruid { get; set; }//still dont know if thats correct
-        public Tasks Rtid { get; set; }//still dont know if thats correct
+        public Users Ruid { get; set; }
+        public Tasks Rtid { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         bool ReminderExistsById(int rid);
         bool ReminderExistsByUid(int uid);
         bool ReminderExistsByDate(DateTime date);
+        bool CreateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity);
+        bool Save();
     }
 }

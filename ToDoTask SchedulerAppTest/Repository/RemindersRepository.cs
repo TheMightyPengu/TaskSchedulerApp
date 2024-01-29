@@ -47,6 +47,20 @@ namespace ToDoTask_SchedulerAppTest.Repository
             return _context.Reminders.Any(r => r.ReminderDate == date);
 
         }
+        public bool CreateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity)
+        {
+            reminder.Rtid = RtidEntity;
+            reminder.Ruid = RuidEntity;
+            _context.Add(reminder);
+
+            return Save();
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
+        }
 
     }
 }
