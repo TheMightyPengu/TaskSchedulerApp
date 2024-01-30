@@ -2,11 +2,8 @@
 
 namespace ToDoTask_SchedulerAppTest.Dto
 {
-    public class RemindersDto
+    public class RemindersCreateDto
     {
-        [Key]
-        public int Rid { get; set; }
         public DateTime ReminderDate { get; set; }
-        public TasksDto Rtid { get; set; }
     }
 }

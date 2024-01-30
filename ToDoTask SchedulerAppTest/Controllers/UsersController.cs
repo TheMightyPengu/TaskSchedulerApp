@@ -29,6 +29,9 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (users == null || !users.Any())
+                return Ok("No users found.");
+
             return Ok(users);
         }
 
@@ -115,6 +118,25 @@ namespace ToDoTask_SchedulerAppTest.Controllers
 
             return Ok("Success");
         }
+
+        [HttpDelete("deleteuser/")]
+        public IActionResult DeleteUser([Required]int uid) {
+
+            if (!_usersRepository.UserExistsById(uid))
+                return NotFound();
+      
+            var UserToDelete = _usersRepository.GetUserById(uid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_usersRepository.DeleteUser(UserToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the user");
+            }
+            return NoContent();
+        }
+
 
     }
 }

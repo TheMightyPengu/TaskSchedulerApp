@@ -1,7 +1,8 @@
-﻿using AutoMapper;
+﻿    using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using ToDoTask_SchedulerAppTest.Dto;
 using ToDoTask_SchedulerAppTest.Interfaces;
 using ToDoTask_SchedulerAppTest.Models;
@@ -30,10 +31,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         {
             var reminders = _mapper.Map<List<RemindersDto>>(_remindersRepository.GetReminders());
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return Ok(reminders);
+            return _remindersServices.CheckGetReminders(reminders, ModelState);
         }
 
         [HttpGet("id/{rid}")]
@@ -51,12 +49,12 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpGet("date/{date}")]
-        public IActionResult GetReminderByDate(DateTime date)
+        public IActionResult GetRemindersByDate(DateTime date)
         {
-            if (!_remindersRepository.ReminderExistsByDate(date))
+            if (!_remindersRepository.RemindersExistsByDate(date))
                 return NotFound();
 
-            var reminder = _mapper.Map<RemindersDto>(_remindersRepository.GetReminderByDate(date));
+            var reminder = _mapper.Map<List<RemindersDto>>(_remindersRepository.GetRemindersByDate(date));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,12 +63,12 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpGet("uid/{uid}")]
-        public IActionResult GetReminderByUid(int uid)
+        public IActionResult GetRemindersByUid(int uid)
         {
-            if (!_remindersRepository.ReminderExistsByUid(uid))
+            if (!_remindersRepository.RemindersExistsByUid(uid))
                 return NotFound();
 
-            var reminder = _mapper.Map<RemindersDto>(_remindersRepository.GetReminderByUid(uid));
+            var reminder = _mapper.Map<List<RemindersDto>>(_remindersRepository.GetRemindersByUid(uid));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -79,7 +77,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpPost("createreminder/")]
-        public IActionResult CreateReminder([FromQuery, Required]int Rtid, [FromQuery, Required]int Ruid, [FromBody, Required]RemindersDto CreateReminder)
+        public IActionResult CreateReminder([FromQuery, Required]int Rtid, [FromQuery, Required]int Ruid, [FromBody, Required] RemindersCreateDto CreateReminder)
         {
 
             if (!ModelState.IsValid)
@@ -94,9 +92,8 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             }
 
             var remindermap = _mapper.Map<Reminders>(CreateReminder);
-            var success = _remindersRepository.CreateReminder(remindermap, ruidEntity, rtidEntity);
 
-            if (!success)
+            if (!_remindersRepository.CreateReminder(remindermap, ruidEntity, rtidEntity))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);

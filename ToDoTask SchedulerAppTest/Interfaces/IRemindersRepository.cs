@@ -6,12 +6,13 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
     {
         ICollection<Reminders> GetReminders();
         Reminders GetReminderById(int rid);
-        Reminders GetReminderByUid(int uid);
-        Reminders GetReminderByDate(DateTime date);
+        ICollection<Reminders> GetRemindersByUid(int uid);
+        ICollection<Reminders> GetRemindersByDate(DateTime date);
         bool ReminderExistsById(int rid);
-        bool ReminderExistsByUid(int uid);
-        bool ReminderExistsByDate(DateTime date);
+        bool RemindersExistsByUid(int uid);
+        bool RemindersExistsByDate(DateTime date);
         bool CreateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity);
+        bool DeleteReminder(Reminders reminder);
         bool Save();
     }
 }

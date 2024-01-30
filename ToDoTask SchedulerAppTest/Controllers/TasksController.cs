@@ -28,6 +28,9 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (tasks == null || !tasks.Any())
+                return Ok("No tasks found.");
+
             return Ok(tasks);
         }
 
@@ -46,12 +49,12 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpGet("date/{date}")]
-        public IActionResult GetTaskByDate(DateTime date)
+        public IActionResult GetTasksByDate(DateTime date)
         {
-            if (!_tasksRepository.TaskExistsByDue(date))
+            if (!_tasksRepository.TasksExistsByDue(date))
                 return NotFound();
 
-            var task = _mapper.Map<TasksDto>(_tasksRepository.GetTaskByDue(date));
+            var task = _mapper.Map<List<TasksDto>>(_tasksRepository.GetTasksByDue(date));
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -62,7 +65,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         [HttpGet("uid/{uid}")]
         public IActionResult GetTasksByUid(int uid)
         {
-            if (!_tasksRepository.TaskExistsByUid(uid))
+            if (!_tasksRepository.TasksExistsByUid(uid))
                 return NotFound();
 
             //var tasks = _mapper.Map<TasksDto>(_tasksRepository.GetTasksByUid(uid));

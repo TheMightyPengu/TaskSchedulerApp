@@ -14,8 +14,10 @@ builder.Services.AddTransient<Seed>();
 builder.Services.AddScoped<IUsersRepository , UsersRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
+builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 builder.Services.AddScoped<IRemindersRepository, RemindersRepository>();
 builder.Services.AddScoped<RemindersServices>();
+builder.Services.AddScoped<TasksGivenServices>();
 
 //builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 

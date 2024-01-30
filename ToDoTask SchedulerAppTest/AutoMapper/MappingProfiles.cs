@@ -9,12 +9,12 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<Users, UsersDto>();
-        CreateMap<Reminders, RemindersDto>();
-        CreateMap<Tasks, TasksDto>();
+        CreateMap<Users, UsersDto>(); CreateMap<UsersDto, Users>();
 
-        CreateMap<UsersDto, Users>();
-        CreateMap<TasksDto, Tasks>();
-        CreateMap<RemindersDto, Reminders>();
+        CreateMap<Tasks, TasksDto>(); CreateMap<TasksDto, Tasks>();
+
+        CreateMap<Reminders, RemindersDto>(); CreateMap<RemindersDto, Reminders>(); CreateMap<RemindersCreateDto, Reminders>();
+
+        CreateMap<TasksGiven, TasksGivenDto>();  CreateMap<TasksGivenDto, TasksGiven>();
     }
 }

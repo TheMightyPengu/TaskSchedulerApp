@@ -13,9 +13,9 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context = context;
         }
 
-        public Tasks GetTaskByDue(DateTime date)
+        public ICollection<Tasks> GetTasksByDue(DateTime date)
         {
-            return _context.Tasks.Where(t => t.Due == date).FirstOrDefault();
+            return _context.Tasks.OrderBy(t => t.Due == date).ToList();
         }
 
         public Tasks GetTaskById(int tid)
@@ -33,7 +33,7 @@ namespace ToDoTask_SchedulerAppTest.Repository
             return _context.Tasks.OrderBy(t => t.Tid).ToList();
         }
 
-        public bool TaskExistsByDue(DateTime date)
+        public bool TasksExistsByDue(DateTime date)
         {
             return _context.Tasks.Any(t => t.Due == date);
         }
@@ -41,7 +41,7 @@ namespace ToDoTask_SchedulerAppTest.Repository
         {
             return _context.Tasks.Any(t => t.Tid == tid);
         }
-        public bool TaskExistsByUid(int uid)
+        public bool TasksExistsByUid(int uid)
         {
             return _context.Users.Any(u => u.Uid == uid);
         }
@@ -49,6 +49,11 @@ namespace ToDoTask_SchedulerAppTest.Repository
         public bool CreateTask(Tasks task)
         {
             _context.Add(task);
+            return Save();
+        }
+        public bool DeleteTask(Tasks task)
+        {
+            _context.Remove(task);
             return Save();
         }
 

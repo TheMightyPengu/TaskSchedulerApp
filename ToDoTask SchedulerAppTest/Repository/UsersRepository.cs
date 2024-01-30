@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Security.Cryptography;
 using ToDoTask_SchedulerAppTest.Data;
 using ToDoTask_SchedulerAppTest.Interfaces;
 using ToDoTask_SchedulerAppTest.Models;
@@ -60,10 +61,17 @@ namespace ToDoTask_SchedulerAppTest.Repository
             return Save();
         }
 
+        public bool DeleteUser(Users user)
+        {
+            _context.Remove(user);
+            return Save();
+        }
+
         public bool Save()
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
         }
+
     }
 }

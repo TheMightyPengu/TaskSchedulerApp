@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Security.Cryptography;
 using ToDoTask_SchedulerAppTest.Data;
 using ToDoTask_SchedulerAppTest.Interfaces;
@@ -14,45 +15,52 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context = context;
         }
 
-        public Reminders GetReminderByDate(DateTime date)
+        public ICollection<Reminders> GetRemindersByDate(DateTime date)
         {
-            return _context.Reminders.Where(r => r.ReminderDate == date).FirstOrDefault();
+            return _context.Reminders.Include(r => r.Rtid).Where(r => r.ReminderDate == date).ToList();
         }
 
         public Reminders GetReminderById(int rid)
         {
-            return _context.Reminders.Where(r => r.Rid == rid).FirstOrDefault();
+            return _context.Reminders.Include(r => r.Rtid).Where(r => r.Rid == rid).FirstOrDefault();
         }
 
-        public Reminders GetReminderByUid(int uid)
+        public ICollection<Reminders> GetRemindersByUid(int uid)
         {
-            return _context.Reminders.Where(r => r.Ruid.Uid == uid).FirstOrDefault();//might be wrong
+            return _context.Reminders.Include(r => r.Rtid).Where(r => r.Ruid.Uid == uid).ToList();
         }
 
         public ICollection<Reminders> GetReminders()
         {
-            return _context.Reminders.OrderBy(r => r.Rid).ToList();
+            return _context.Reminders.Include(r => r.Rtid).OrderBy(r => r.Rid).ToList();
         }
 
         public bool ReminderExistsById(int rid)
         {
             return _context.Reminders.Any(r => r.Rid == rid);
         }
-        public bool ReminderExistsByUid(int uid)
+        public bool RemindersExistsByUid(int uid)
         {
             return _context.Reminders.Any(r => r.Ruid.Uid == uid);
         }
-        public bool ReminderExistsByDate(DateTime date)
+        public bool RemindersExistsByDate(DateTime date)
         {
             return _context.Reminders.Any(r => r.ReminderDate == date);
 
         }
+
         public bool CreateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity)
         {
             reminder.Rtid = RtidEntity;
             reminder.Ruid = RuidEntity;
             _context.Add(reminder);
 
+            return Save();
+        }
+
+        public bool DeleteReminder(Reminders reminder)
+        {
+            _context.Remove(reminder);
             return Save();
         }
 
