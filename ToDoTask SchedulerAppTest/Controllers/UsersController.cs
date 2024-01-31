@@ -119,8 +119,29 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok("Success");
         }
 
+        [HttpPut("updateuser/")]
+        public IActionResult UpdateUser([FromBody, Required]UsersDto UpdatedUser)
+        {
+            if (UpdatedUser == null)
+                return BadRequest("Invalid user ID");
+
+            if (!_usersRepository.UserExistsById(UpdatedUser.Uid))
+                return NotFound("User not found");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = _mapper.Map<Users>(UpdatedUser);
+
+            if (!_usersRepository.UpdateUser(user))
+                return StatusCode(500, ModelState);
+
+            return NoContent();
+        }
+
         [HttpDelete("deleteuser/")]
-        public IActionResult DeleteUser([Required]int uid) {
+        public IActionResult DeleteUser([Required]int uid) 
+        {
 
             if (!_usersRepository.UserExistsById(uid))
                 return NotFound();

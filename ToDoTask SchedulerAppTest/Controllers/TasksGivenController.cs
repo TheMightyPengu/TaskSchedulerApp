@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using ToDoTask_SchedulerAppTest.Dto;
 using ToDoTask_SchedulerAppTest.Interfaces;
@@ -54,6 +55,21 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(task);
         }
 
+        [HttpGet("id/{uid}/{tid}")]
+        public IActionResult GetTaskGivenByUidAndTid(int uid, int tid)
+        {
+            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(uid, tid))
+                return NotFound();
+
+            var task = _mapper.Map<TasksGivenDto>(_tasksgivenRepository.GetTaskGivenByUidAndTid(uid, tid));
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return Ok(task);
+        }
+
+
         [HttpGet("tid/{tid}")]
         public IActionResult GetUsersByTid(int tid)
         {
@@ -69,12 +85,12 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpPost("assigntask/")]
-        public IActionResult AssignTask([FromQuery, Required]int Uid, [FromQuery, Required]int Tid)
+        public IActionResult CreateTaskGiven([FromQuery, Required]int Uid, [FromQuery, Required]int Tid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (CanCreate, UidEntity, TidEntity, ErrorMessage) = _tasksgivenServices.CheckAssignTask(Uid, Tid);
+            var (CanCreate, UidEntity, TidEntity, ErrorMessage) = _tasksgivenServices.CheckCreateTaskGiven(Uid, Tid);
            
             if (!CanCreate)
             {
@@ -82,15 +98,58 @@ namespace ToDoTask_SchedulerAppTest.Controllers
                 return BadRequest(ModelState);
             }
 
-           //var taskgivenmap = _mapper.Map<TasksGivenCreateDto>(AssignTask);
+            //var taskgivenmap = _mapper.Map<TasksGivenCreateDto>(CreateTaskGiven);
 
-            if (!_tasksgivenRepository.AssignTask(UidEntity, TidEntity))
+            if (!_tasksgivenRepository.CreateTaskGiven(UidEntity, TidEntity))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }   
 
             return Ok("Success");
+        }
+
+        [HttpPut("updatetaskgiven/")]
+        public IActionResult UpdateTaskGiven([FromBody, Required]TasksGivenUpdateDto UpdatedTaskGiven, [FromQuery, Required]int Tuid, [FromQuery, Required]int Ttid)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (CanUpdate, ErrorMessage) = _tasksgivenServices.CheckUpdateTaskGiven(Tuid, Ttid, UpdatedTaskGiven);
+
+            if (!CanUpdate)
+            {
+                ModelState.AddModelError("", ErrorMessage);
+                return BadRequest(ModelState);
+            }
+
+            var taskgiven = _mapper.Map<TasksGiven>(UpdatedTaskGiven);
+
+            if (!_tasksgivenRepository.UpdateTaskGiven(taskgiven, Tuid, Ttid))
+                return StatusCode(500, ModelState);
+
+            return NoContent();
+        }
+
+        [HttpDelete("deletetaskgiven/")]
+        public IActionResult DeleteTaskGiven([Required]int Tuid, [Required]int Ttid)
+        {
+
+            if (!_tasksgivenRepository.TasksExistsByUid(Tuid) || !_tasksgivenRepository.UsersExistsByTid(Ttid))
+                return NotFound();
+
+            var TaskGivenToDelete = _tasksgivenRepository.GetTaskGivenByUidAndTid(Tuid, Ttid);
+            if (TaskGivenToDelete == null)
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_tasksgivenRepository.DeleteTaskGiven(TaskGivenToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the given task");
+            }
+            return NoContent();
         }
 
     }

@@ -63,7 +63,14 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context.Remove(reminder);
             return Save();
         }
+        public bool UpdateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity)
+        {
+            reminder.Rtid = RtidEntity;
+            reminder.Ruid = RuidEntity;
+            _context.Update(reminder);
 
+            return Save();
+        }
         public bool Save()
         {
             var saved = _context.SaveChanges();

@@ -12,6 +12,7 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         bool TasksExistsByUid(int uid);
         bool TasksExistsByDue(DateTime date);
         bool CreateTask(Tasks task);
+        bool UpdateTask(Tasks task);
         bool DeleteTask(Tasks task);
         bool Save();
     }

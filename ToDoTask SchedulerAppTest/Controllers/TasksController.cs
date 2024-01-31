@@ -105,5 +105,44 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok("Success");
         }
 
+        [HttpPut("updatetask/")]
+        public IActionResult UpdateTask([FromBody, Required] TasksDto UpdatedTask)
+        {
+            if (UpdatedTask == null)
+                return BadRequest("Invalid task ID");
+
+            if (!_tasksRepository.TaskExistsById(UpdatedTask.Tid))
+                return NotFound("Task not found");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var task = _mapper.Map<Tasks>(UpdatedTask);
+
+            if (!_tasksRepository.UpdateTask(task))
+                return StatusCode(500, ModelState);
+
+            return NoContent();
+        }
+
+        [HttpDelete("deletetask/")]
+        public IActionResult DeleteTask([Required] int tid)
+        {
+
+            if (!_tasksRepository.TaskExistsById(tid))
+                return NotFound();
+
+            var TaskToDelete = _tasksRepository.GetTaskById(tid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_tasksRepository.DeleteTask(TaskToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the task");
+            }
+            return NoContent();
+        }
+
     }
 }

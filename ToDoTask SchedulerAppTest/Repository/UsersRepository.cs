@@ -60,6 +60,11 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context.Add(user);
             return Save();
         }
+        public bool UpdateUser(Users user)
+        {
+            _context.Update(user);
+            return Save();
+        }
 
         public bool DeleteUser(Users user)
         {

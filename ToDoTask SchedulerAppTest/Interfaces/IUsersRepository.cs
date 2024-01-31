@@ -15,6 +15,7 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         bool UserExistsByFullname(string fullName);
         bool UserExistsByTid(int tid);
         bool CreateUser(Users user);
+        bool UpdateUser(Users user);
         bool DeleteUser(Users user);
         bool Save();
     }

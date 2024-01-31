@@ -51,6 +51,12 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context.Add(task);
             return Save();
         }
+        public bool UpdateTask(Tasks task)
+        {
+            _context.Update(task);
+            return Save();
+        }
+
         public bool DeleteTask(Tasks task)
         {
             _context.Remove(task);

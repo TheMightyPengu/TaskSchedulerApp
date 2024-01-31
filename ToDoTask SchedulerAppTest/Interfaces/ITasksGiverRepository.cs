@@ -8,9 +8,13 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         ICollection<TasksGiven> GetTasks();
         ICollection<TasksGiven> GetTasksByUid(int uid);
         ICollection<Users> GetUsersByTid(int tid);
+        TasksGiven GetTaskGivenByUidAndTid(int Tuid, int Ttid);
         bool TasksExistsByUid(int uid);
         bool UsersExistsByTid(int tid);
-        bool AssignTask(Users UidEntity, Tasks TidEntity);
+        bool TaskGivenExistsByUidAndTid(int uid, int tid);
+        bool CreateTaskGiven(Users UidEntity, Tasks TidEntity);
+        bool UpdateTaskGiven(TasksGiven taskgiven, int Tuid, int Ttid);
+        bool DeleteTaskGiven(TasksGiven taskgiven);
         bool Save();
     }
 }

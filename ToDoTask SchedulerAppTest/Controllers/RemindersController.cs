@@ -1,7 +1,9 @@
 ﻿    using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using ToDoTask_SchedulerAppTest.Dto;
 using ToDoTask_SchedulerAppTest.Interfaces;
@@ -76,14 +78,13 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(reminder);
         }
 
-        [HttpPost("createreminder/")]
-        public IActionResult CreateReminder([FromQuery, Required]int Rtid, [FromQuery, Required]int Ruid, [FromBody, Required] RemindersCreateDto CreateReminder)
+        [HttpPut("updatereminder/")]
+        public IActionResult UpdateReminder([FromBody, Required] RemindersUpdateDto UpdatedReminder)
         {
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (canCreate, ruidEntity, rtidEntity, errorMessage) = _remindersServices.CheckCreateReminder(Rtid, Ruid);
+            var (canCreate, ruidEntity, rtidEntity, errorMessage) = _remindersServices.CheckCreateUpdateReminder(UpdatedReminder.Ruid, UpdatedReminder.Rtid);
 
             if (!canCreate)
             {
@@ -91,15 +92,57 @@ namespace ToDoTask_SchedulerAppTest.Controllers
                 return BadRequest(ModelState);
             }
 
-            var remindermap = _mapper.Map<Reminders>(CreateReminder);
+            var reminder = _mapper.Map<Reminders>(UpdatedReminder);
 
-            if (!_remindersRepository.CreateReminder(remindermap, ruidEntity, rtidEntity))
+            if (!_remindersRepository.UpdateReminder(reminder, ruidEntity, rtidEntity))
+                return StatusCode(500, ModelState);
+
+            return NoContent();
+        }
+
+        [HttpPost("createreminder/")]
+        public IActionResult CreateReminder([FromQuery, Required]int Ruid, [FromQuery, Required]int Rtid, [FromBody, Required] RemindersCreateDto CreateReminder)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (canCreate, ruidEntity, rtidEntity, errorMessage) = _remindersServices.CheckCreateUpdateReminder(Ruid, Rtid);
+
+            if (!canCreate)
+            {
+                ModelState.AddModelError("", errorMessage);
+                return BadRequest(ModelState);
+            }
+
+            var reminder = _mapper.Map<Reminders>(CreateReminder);
+
+            if (!_remindersRepository.CreateReminder(reminder, ruidEntity, rtidEntity))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
 
             return Ok("Success");
+        }
+
+        [HttpDelete("deletereminder/")]
+        public IActionResult DeleteReminder([Required] int rid)
+        {
+
+            if (!_remindersRepository.ReminderExistsById(rid))
+                return NotFound();
+
+            var ReminderToDelete = _remindersRepository.GetReminderById(rid);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_remindersRepository.DeleteReminder(ReminderToDelete))
+            {
+                ModelState.AddModelError("", "Something went wrong deleting the reminder");
+            }
+            return NoContent();
         }
     }
 }

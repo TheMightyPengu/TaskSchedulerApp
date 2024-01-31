@@ -15,7 +15,7 @@ namespace ToDoTask_SchedulerAppTest.Services
         {
             _context = context;
         }
-        public (bool CanCreate, Users? RuidEntity, Tasks? RtidEntity, string? ErrorMessage) CheckCreateReminder(int Rtid, int Ruid)
+        public (bool CanCreate, Users? RuidEntity, Tasks? RtidEntity, string? ErrorMessage) CheckCreateUpdateReminder(int Ruid, int Rtid)
         {
             var RuidEntity = _context.Users.Find(Ruid);
             var RtidEntity = _context.Tasks.Find(Rtid);
@@ -48,6 +48,7 @@ namespace ToDoTask_SchedulerAppTest.Services
 
             return new ObjectResult(reminders) {StatusCode = 200};
         }
+
 
     }
 }
