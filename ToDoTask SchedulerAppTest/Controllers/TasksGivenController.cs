@@ -69,7 +69,6 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(task);
         }
 
-
         [HttpGet("tid/{tid}")]
         public IActionResult GetUsersByTid(int tid)
         {
@@ -124,6 +123,12 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             }
 
             var taskgiven = _mapper.Map<TasksGiven>(UpdatedTaskGiven);
+
+            if (_tasksgivenRepository.TaskGivenExistsByUidAndTid(UpdatedTaskGiven.Tuid, UpdatedTaskGiven.Ttid))
+            {
+                ModelState.AddModelError("", "TaskGiven already exists");
+                return BadRequest(ModelState);
+            }
 
             if (!_tasksgivenRepository.UpdateTaskGiven(taskgiven, Tuid, Ttid))
                 return StatusCode(500, ModelState);

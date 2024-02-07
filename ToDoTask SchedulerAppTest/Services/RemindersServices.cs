@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Security.Principal;
 using ToDoTask_SchedulerAppTest.Data;
@@ -9,23 +10,23 @@ namespace ToDoTask_SchedulerAppTest.Services
 {
     public class RemindersServices
     {
-        private readonly DataContext _context;
+        private readonly IdentityDbContext _context;
 
-        public RemindersServices(DataContext context)
+        public RemindersServices(IdentityDbContext context)
         {
             _context = context;
         }
         public (bool CanCreate, Users? RuidEntity, Tasks? RtidEntity, string? ErrorMessage) CheckCreateUpdateReminder(int Ruid, int Rtid)
         {
-            var RuidEntity = _context.Users.Find(Ruid);
-            var RtidEntity = _context.Tasks.Find(Rtid);
+            var RuidEntity = _context.Set<Users>().Find(Ruid);
+            var RtidEntity = _context.Set<Tasks>().Find(Rtid);
 
             if (RuidEntity == null)
                 return (false, null, null, "User not found.");
             else if (RtidEntity == null)
                 return (false, null, null, "Task not found.");
 
-            var userHasTaskAssigned = _context.TasksGiven.Any(tg => tg.User.Uid == Ruid && tg.Task.Tid == Rtid);
+            var userHasTaskAssigned = _context.Set<TasksGiven>().Any(tg => tg.User.Uid == Ruid && tg.Task.Tid == Rtid);
             if (!userHasTaskAssigned)
             {
                 return (false, null, null, "User does not have the specified task assigned.");

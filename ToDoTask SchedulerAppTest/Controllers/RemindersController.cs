@@ -1,16 +1,10 @@
-﻿    using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Principal;
-using System.Threading.Tasks;
 using ToDoTask_SchedulerAppTest.Dto;
 using ToDoTask_SchedulerAppTest.Interfaces;
 using ToDoTask_SchedulerAppTest.Models;
-using ToDoTask_SchedulerAppTest.Repository;
 using ToDoTask_SchedulerAppTest.Services;
-
 
 namespace ToDoTask_SchedulerAppTest.Controllers
 {
@@ -101,7 +95,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpPost("createreminder/")]
-        public IActionResult CreateReminder([FromQuery, Required]int Ruid, [FromQuery, Required]int Rtid, [FromBody, Required] RemindersCreateDto CreateReminder)
+        public IActionResult CreateReminder([FromQuery, Required] int Ruid, [FromQuery, Required] int Rtid, [FromBody, Required] RemindersCreateDto CreateReminder)
         {
 
             if (!ModelState.IsValid)
