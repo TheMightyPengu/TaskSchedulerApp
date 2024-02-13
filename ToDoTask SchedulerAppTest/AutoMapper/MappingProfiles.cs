@@ -9,8 +9,8 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<Users, UsersDto>();
-        CreateMap<UsersDto, Users>();
+        CreateMap<ApplicationUser, UsersDto>();
+        CreateMap<UsersDto, ApplicationUser>();
 
         CreateMap<Tasks, TasksDto>();
         CreateMap<TasksDto, Tasks>();
@@ -18,7 +18,7 @@ public class MappingProfiles : Profile
         CreateMap<Reminders, RemindersDto>();
         CreateMap<RemindersDto, Reminders>();
         CreateMap<RemindersCreateDto, Reminders>();
-        CreateMap<RemindersUpdateDto, Reminders>().ForMember(dest => dest.Ruid, opt => opt.Ignore()).ForMember(dest => dest.Rtid, opt => opt.Ignore());
+        CreateMap<RemindersUpdateDto, Reminders>().ForMember(dest => dest.Rauid, opt => opt.Ignore()).ForMember(dest => dest.Rtid, opt => opt.Ignore());
 
         CreateMap<TasksGiven, TasksGivenDto>();
         CreateMap<TasksGivenDto, TasksGiven>();

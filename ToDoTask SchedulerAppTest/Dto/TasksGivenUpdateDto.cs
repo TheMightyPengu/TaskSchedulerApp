@@ -2,7 +2,7 @@
 {
     public class TasksGivenUpdateDto
     {
-        public int Tuid { get; set; }
-        public int Ttid { get; set; }
+        public string TGauid { get; set; }
+        public int TGtid { get; set; }
     }
 }

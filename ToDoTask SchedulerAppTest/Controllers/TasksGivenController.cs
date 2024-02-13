@@ -30,10 +30,10 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         [HttpGet]
         public IActionResult GetTasksGiven()
         {
-            var tasks = _mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasks());
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var tasks = _mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasksGiven());
 
             if (tasks == null || !tasks.Any())
                 return Ok("No tasks found.");
@@ -42,64 +42,60 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpGet("uid/{uid}")]
-        public IActionResult GetTasksByUid(int uid)
+        public IActionResult GetTasksByUid(string TGauid)
         {
-            if (!_tasksgivenRepository.TasksExistsByUid(uid))
-                return NotFound();
-
-            var task = _mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasksByUid(uid));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(task);
+            if (!_tasksgivenRepository.TasksGivenExistsByUid(TGauid))
+                return NotFound();
+
+            return Ok(_mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasksGivenByUid(TGauid)));
         }
 
         [HttpGet("id/{uid}/{tid}")]
-        public IActionResult GetTaskGivenByUidAndTid(int uid, int tid)
+        public IActionResult GetTaskGivenByUidAndTid(String TGauid, int TGtid)
         {
-            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(uid, tid))
-                return NotFound();
-
-            var task = _mapper.Map<TasksGivenDto>(_tasksgivenRepository.GetTaskGivenByUidAndTid(uid, tid));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(task);
+            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(TGauid, TGtid))
+                return NotFound();
+
+            return Ok(_mapper.Map<TasksGivenDto>(_tasksgivenRepository.GetTaskGivenByUidAndTid(TGauid, TGtid)));
         }
 
         [HttpGet("tid/{tid}")]
-        public IActionResult GetUsersByTid(int tid)
+        public IActionResult GetUsersByTid(int TGtid)
         {
-            if (!_tasksgivenRepository.UsersExistsByTid(tid))
-                return NotFound();
-
-            var task = _mapper.Map<List<UsersDto>>(_tasksgivenRepository.GetUsersByTid(tid));
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            return Ok(task);
+            if (!_tasksgivenRepository.UsersExistsByTid(TGtid))
+                return NotFound();
+
+            var usersDto = _mapper.Map<List<UsersDto>>(_tasksgivenRepository.GetUsersByTid(TGtid));
+
+            return Ok(usersDto);
         }
 
         [HttpPost("assigntask/")]
-        public IActionResult CreateTaskGiven([FromQuery, Required]int Uid, [FromQuery, Required]int Tid)
+        public IActionResult CreateTaskGiven([FromBody, Required] TasksGivenUpdateDto newTaskGiven, [FromQuery, Required]string newTGauid, [FromQuery, Required]int newTGtid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (CanCreate, UidEntity, TidEntity, ErrorMessage) = _tasksgivenServices.CheckCreateTaskGiven(Uid, Tid);
+            var (canCreate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(newTGauid, newTGtid, newTaskGiven);
            
-            if (!CanCreate)
+            if (!canCreate)
             {
-                ModelState.AddModelError("", ErrorMessage);
+                ModelState.AddModelError("", errorMessage);
                 return BadRequest(ModelState);
             }
 
             //var taskgivenmap = _mapper.Map<TasksGivenCreateDto>(CreateTaskGiven);
 
-            if (!_tasksgivenRepository.CreateTaskGiven(UidEntity, TidEntity))
+            if (!_tasksgivenRepository.CreateTaskGiven(newTGauid, newTGtid))
             {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
@@ -109,46 +105,38 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpPut("updatetaskgiven/")]
-        public IActionResult UpdateTaskGiven([FromBody, Required]TasksGivenUpdateDto UpdatedTaskGiven, [FromQuery, Required]int Tuid, [FromQuery, Required]int Ttid)
+        public IActionResult UpdateTaskGiven([FromBody, Required]TasksGivenUpdateDto newTaskGiven, [FromQuery, Required]string TGauid, [FromQuery, Required]int TGtid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (CanUpdate, ErrorMessage) = _tasksgivenServices.CheckUpdateTaskGiven(Tuid, Ttid, UpdatedTaskGiven);
-
-            if (!CanUpdate)
+            var (canUpdate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(TGauid, TGtid, newTaskGiven);
+            if (!canUpdate)
             {
-                ModelState.AddModelError("", ErrorMessage);
+                ModelState.AddModelError("", errorMessage);
                 return BadRequest(ModelState);
             }
 
-            var taskgiven = _mapper.Map<TasksGiven>(UpdatedTaskGiven);
+            var taskgiven = _mapper.Map<TasksGiven>(newTaskGiven);
 
-            if (_tasksgivenRepository.TaskGivenExistsByUidAndTid(UpdatedTaskGiven.Tuid, UpdatedTaskGiven.Ttid))
-            {
-                ModelState.AddModelError("", "TaskGiven already exists");
-                return BadRequest(ModelState);
-            }
-
-            if (!_tasksgivenRepository.UpdateTaskGiven(taskgiven, Tuid, Ttid))
+            if (!_tasksgivenRepository.UpdateTaskGiven(taskgiven, TGauid, TGtid))
                 return StatusCode(500, ModelState);
 
             return NoContent();
         }
 
         [HttpDelete("deletetaskgiven/")]
-        public IActionResult DeleteTaskGiven([Required]int Tuid, [Required]int Ttid)
+        public IActionResult DeleteTaskGiven([Required]string TGauid, [Required]int TGtid)
         {
-
-            if (!_tasksgivenRepository.TasksExistsByUid(Tuid) || !_tasksgivenRepository.UsersExistsByTid(Ttid))
-                return NotFound();
-
-            var TaskGivenToDelete = _tasksgivenRepository.GetTaskGivenByUidAndTid(Tuid, Ttid);
-            if (TaskGivenToDelete == null)
-                return NotFound();
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!_tasksgivenRepository.TasksGivenExistsByUid(TGauid) || !_tasksgivenRepository.UsersExistsByTid(TGtid))
+                return NotFound();
+
+            var TaskGivenToDelete = _tasksgivenRepository.GetTaskGivenByUidAndTid(TGauid, TGtid);
+            if (TaskGivenToDelete == null)
+                return NotFound();
 
             if (!_tasksgivenRepository.DeleteTaskGiven(TaskGivenToDelete))
             {

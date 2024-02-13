@@ -6,7 +6,7 @@ namespace ToDoTask_SchedulerAppTest.Dto
     {
         public int Rid { get; set; }
         public DateTime ReminderDate { get; set; }
-        public int Ruid { get; set; }
+        public string Rauid { get; set; }
         public int Rtid { get; set; }
     }
 }

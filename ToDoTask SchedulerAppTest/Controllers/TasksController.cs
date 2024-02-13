@@ -37,13 +37,13 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         [HttpGet("id/{tid}")]
         public IActionResult GetReminderById(int tid)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (!_tasksRepository.TaskExistsById(tid))
                 return NotFound();
 
             var task = _mapper.Map<TasksDto>(_tasksRepository.GetTaskById(tid));
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             return Ok(task);
         }
@@ -51,20 +51,23 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         [HttpGet("date/{date}")]
         public IActionResult GetTasksByDate(DateTime date)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (!_tasksRepository.TasksExistsByDue(date))
                 return NotFound();
 
             var task = _mapper.Map<List<TasksDto>>(_tasksRepository.GetTasksByDue(date));
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             return Ok(task);
         }
 
         [HttpGet("uid/{uid}")]
-        public IActionResult GetTasksByUid(int uid)
+        public IActionResult GetTasksByUid(string uid)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (!_tasksRepository.TasksExistsByUid(uid))
                 return NotFound();
 
@@ -74,48 +77,47 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             if (tasks == null || !tasks.Any())
                 return Ok("User has no tasks");
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             return Ok(tasks);
         }
 
-        [HttpPost("createtask/")]
-        public IActionResult CreateTask([FromBody, Required]TasksDto CreateTask)
+        [HttpPost("createtask")]
+        public IActionResult CreateTask([FromBody, Required] TasksDto newTask)
         {
-            var tasks = _tasksRepository.GetTasks().Where(t => t.Description.Trim().ToUpper() == CreateTask.Description.Trim().ToUpper()).FirstOrDefault();
-
-            if (tasks != null)
-            {
-                ModelState.AddModelError("", "Task already exists, change Description");
-                return StatusCode(422, ModelState);
-            }
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var taskmap = _mapper.Map<Tasks>(CreateTask);
+            var existingTask = _tasksRepository.GetTasks()
+                .FirstOrDefault(t => t.Description.Trim().ToUpper() == newTask.Description.Trim().ToUpper());
 
-            if (!_tasksRepository.CreateTask(taskmap))
+            if (existingTask != null)
             {
-                ModelState.AddModelError("", "Something went wrong while saving");
+                ModelState.AddModelError("", "Task already exists, change Description");
+                return BadRequest(ModelState);
+            }
+
+            var taskMap = _mapper.Map<Tasks>(newTask);
+
+            if (!_tasksRepository.CreateTask(taskMap))
+            {
+                ModelState.AddModelError("", "Unable to save the task");
                 return StatusCode(500, ModelState);
             }
 
             return Ok("Success");
         }
 
+
         [HttpPut("updatetask/")]
         public IActionResult UpdateTask([FromBody, Required] TasksDto UpdatedTask)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (UpdatedTask == null)
                 return BadRequest("Invalid task ID");
 
             if (!_tasksRepository.TaskExistsById(UpdatedTask.Tid))
                 return NotFound("Task not found");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             var task = _mapper.Map<Tasks>(UpdatedTask);
 
@@ -128,14 +130,13 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         [HttpDelete("deletetask/")]
         public IActionResult DeleteTask([Required] int tid)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             if (!_tasksRepository.TaskExistsById(tid))
                 return NotFound();
 
             var TaskToDelete = _tasksRepository.GetTaskById(tid);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             if (!_tasksRepository.DeleteTask(TaskToDelete))
             {

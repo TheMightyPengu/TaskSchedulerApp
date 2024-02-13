@@ -15,48 +15,29 @@ namespace ToDoTask_SchedulerAppTest.Services
 
     public class TasksGivenServices
     {
-        private readonly IdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly ITasksGivenRepository _tasksgivenRepository;
 
-        public TasksGivenServices(IdentityDbContext context, ITasksGivenRepository tasksgivenRepository)
+        public TasksGivenServices(ApplicationDbContext context, ITasksGivenRepository tasksgivenRepository)
         {
             _context = context;
             _tasksgivenRepository = tasksgivenRepository;
         }
 
-        public (bool CanCreate, Users? UidEntity, Tasks? TidEntity, string? ErrorMessage) CheckCreateTaskGiven(int Uid, int Tid)
+        public (bool canUpdate, string? errorMessage) ValidateTaskGivenEntities(string newTGauid, int newTGtid, TasksGivenUpdateDto newTaskGiven)
         {
-            var UidEntity = _context.Set<Users>().Find(Uid);
-            var TidEntity = _context.Set<Tasks>().Find(Tid);
-
-            if (UidEntity == null)
-                return (false, null, null, "User not found.");
-            else if (TidEntity == null)
-                return (false, null, null, "Task not found.");
-
-            var userHasTaskAssigned = _context.Set<TasksGiven>().Any(tg => tg.User.Uid == Uid && tg.Task.Tid == Tid);
-
-            if (!userHasTaskAssigned)
-                return (false, null, null, "User does not have the specified task assigned.");
-
-            return (true, UidEntity, TidEntity, null);
-        }
-
-        public (bool CanUpdate, string? ErrorMessage) CheckUpdateTaskGiven(int Tuid, int Ttid, TasksGivenUpdateDto UpdatedTaskGiven)
-        {
-            if (_context.Set<Users>().Find(Tuid) == null)
+            if (!_context.Users.Any(u => u.Id == newTGauid))
                 return (false, "User not found.");
-            else if (_context.Set<Tasks>().Find(Ttid) == null)
+            else if (!_context.Tasks.Any(t => t.Tid == newTGtid))
                 return (false, "Task not found.");
 
-            if (UpdatedTaskGiven == null)
-                return (false, "Invalid task given");
+            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(newTGauid, newTGtid))
+                return (false, "TaskGiven not found");
 
-            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(Tuid, Ttid))
-                return (false, "Task given not found");
+            if (_tasksgivenRepository.TaskGivenExistsByUidAndTid(newTaskGiven.TGauid, newTaskGiven.TGtid))
+                return (false, "TaskGiven already exists");
 
             return (true, null);
-
         }
 
 

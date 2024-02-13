@@ -10,47 +10,60 @@ namespace ToDoTask_SchedulerAppTest.Repository
 {
     public class RemindersRepository : IRemindersRepository
     {
-        private readonly IdentityDbContext<ApplicationUser> _context;
-        public RemindersRepository(IdentityDbContext<ApplicationUser> context)
+        private readonly ApplicationDbContext _context;
+        public RemindersRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public ICollection<Reminders> GetRemindersByDate(DateTime date)
         {
-            return _context.Set<Reminders>().Include(r => r.Rtid).Where(r => r.ReminderDate == date).ToList();
+            return _context.Reminders.Include(r => r.Rtask).Where(r => r.ReminderDate == date).ToList();
         }
 
         public Reminders GetReminderById(int rid)
         {
-            return _context.Set<Reminders>().Include(r => r.Rtid).Where(r => r.Rid == rid).FirstOrDefault();
+            return _context.Reminders.Include(r => r.Rtask).Where(r => r.Rid == rid).FirstOrDefault();
         }
 
-        public ICollection<Reminders> GetRemindersByUid(int uid)
+        public ICollection<Reminders> GetRemindersByUid(string uid)
         {
-            return _context.Set<Reminders>().Include(r => r.Rtid).Where(r => r.Ruid.Uid == uid).ToList();
+            return _context.Reminders.Include(r => r.Rtask).Where(r => r.Rauid == uid).ToList();
         }
 
         public ICollection<Reminders> GetReminders()
         {
-            return _context.Set<Reminders>().Include(r => r.Rtid).OrderBy(r => r.Rid).ToList();
+            return _context.Reminders.Include(r => r.Rtask).OrderBy(r => r.Rid).ToList();
         }
 
         public bool ReminderExistsById(int rid)
         {
-            return _context.Set<Reminders>().Any(r => r.Rid == rid);
+            return _context.Reminders.Any(r => r.Rid == rid);
         }
-        public bool RemindersExistsByUid(int uid)
+        public bool RemindersExistsByUid(string uid)
         {
-            return _context.Set<Reminders>().Any(r => r.Ruid.Uid == uid);
+            return _context.Reminders.Any(au => au.Rauid == uid);
         }
         public bool RemindersExistsByDate(DateTime date)
         {
-            return _context.Set<Reminders>().Any(r => r.ReminderDate == date);
+            return _context.Reminders.Any(r => r.ReminderDate == date);
 
         }
 
-        public bool CreateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity)
+        public bool CreateReminder(Reminders reminder)
+        {
+            _context.Reminders.Add(reminder);
+            return Save();
+        }
+
+        public bool UpdateReminder(Reminders reminder)
+        {
+            _context.Reminders.Update(reminder);
+            return Save();
+        }
+
+        /*     
+        public bool CreateReminder(Reminders reminder, Tasks RtidEntity, Users RuidEntity)
         {
             reminder.Rtid = RtidEntity;
             reminder.Ruid = RuidEntity;
@@ -58,13 +71,9 @@ namespace ToDoTask_SchedulerAppTest.Repository
 
             return Save();
         }
-
-        public bool DeleteReminder(Reminders reminder)
-        {
-            _context.Remove(reminder);
-            return Save();
-        }
-        public bool UpdateReminder(Reminders reminder, Users RuidEntity, Tasks RtidEntity)
+        *///CreateReminder OLD
+        /*
+        public bool UpdateReminder(Reminders reminder, Tasks RtidEntity, Users RuidEntity)
         {
             reminder.Rtid = RtidEntity;
             reminder.Ruid = RuidEntity;
@@ -72,6 +81,14 @@ namespace ToDoTask_SchedulerAppTest.Repository
 
             return Save();
         }
+        *///UpdateReminder OLD
+
+        public bool DeleteReminder(Reminders reminder)
+        {
+            _context.Remove(reminder);
+            return Save();
+        }
+
         public bool Save()
         {
             var saved = _context.SaveChanges();

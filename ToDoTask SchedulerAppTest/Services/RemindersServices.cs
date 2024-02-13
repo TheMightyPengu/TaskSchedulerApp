@@ -10,46 +10,38 @@ namespace ToDoTask_SchedulerAppTest.Services
 {
     public class RemindersServices
     {
-        private readonly IdentityDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public RemindersServices(IdentityDbContext context)
+        public RemindersServices(ApplicationDbContext context)
         {
             _context = context;
         }
-        public (bool CanCreate, Users? RuidEntity, Tasks? RtidEntity, string? ErrorMessage) CheckCreateUpdateReminder(int Ruid, int Rtid)
+
+        public (bool canCreate, string? ErrorMessage) ValidateReminderEntities(string Ruid, int Rtid)
         {
-            var RuidEntity = _context.Set<Users>().Find(Ruid);
-            var RtidEntity = _context.Set<Tasks>().Find(Rtid);
+            if (_context.Users.Find(Ruid) == null)
+                return (false, "User not found.");
+            else if (_context.Tasks.Find(Rtid) == null)
+                return (false, "Task not found.");
 
-            if (RuidEntity == null)
-                return (false, null, null, "User not found.");
-            else if (RtidEntity == null)
-                return (false, null, null, "Task not found.");
+            var userHasTaskAssigned = _context.TasksGiven.Any(tg => tg.TGauid == Ruid && tg.TGtid == Rtid);
 
-            var userHasTaskAssigned = _context.Set<TasksGiven>().Any(tg => tg.User.Uid == Ruid && tg.Task.Tid == Rtid);
             if (!userHasTaskAssigned)
-            {
-                return (false, null, null, "User does not have the specified task assigned.");
-            }
-
-            return (true, RuidEntity, RtidEntity, null);
+                return (false, "User does not have the specified task assigned.");
+            
+            return (true, null);
         }
 
-        public ObjectResult CheckGetReminders(List<RemindersDto> reminders, ModelStateDictionary ModelState)
+        public ActionResult ValidateGetReminders(List<RemindersDto> reminders, ModelStateDictionary ModelState)
         {
-            if (reminders == null || !reminders.Any())
-            {
-                return new ObjectResult("No reminders found.") {StatusCode = 404};
-            }
-
             if (!ModelState.IsValid)
-            {
-                return new ObjectResult("Model state isnt valid") {StatusCode = 400};
-            }
+                return new BadRequestObjectResult(new { Error = "Model state isn't valid." });
 
-            return new ObjectResult(reminders) {StatusCode = 200};
+            if (reminders == null || !reminders.Any())
+                return new NotFoundObjectResult(new { Message = "No reminders found." });
+
+            return new OkObjectResult(reminders);
         }
-
 
     }
 }

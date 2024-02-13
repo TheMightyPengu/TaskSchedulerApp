@@ -27,7 +27,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
-builder.Services.AddScoped<IUsersRepository , UsersRepository>();
+//builder.Services.AddScoped<IUsersRepository , UsersRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();

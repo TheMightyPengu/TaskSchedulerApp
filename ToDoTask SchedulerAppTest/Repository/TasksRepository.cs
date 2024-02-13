@@ -9,43 +9,54 @@ namespace ToDoTask_SchedulerAppTest.Repository
 {
     public class TasksRepository : ITasksRepository
     {
-        private readonly IdentityDbContext<ApplicationUser> _context;
-        public TasksRepository(IdentityDbContext<ApplicationUser> context)
+        private readonly ApplicationDbContext _context;
+
+        public TasksRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public ICollection<Tasks> GetTasksByDue(DateTime date)
         {
-            return _context.Set<Tasks>().OrderBy(t => t.Due == date).ToList();
+            return _context.Tasks.OrderBy(t => t.Due == date).ToList();
         }
 
         public Tasks GetTaskById(int tid)
         {
-            return _context.Set<Tasks>().Where(t => t.Tid == tid).FirstOrDefault();
+            return _context.Tasks.Where(t => t.Tid == tid).FirstOrDefault();
         }
 
-        public ICollection<Tasks> GetTasksByUid(int uid)
+        //public ICollection<Tasks> GetTasksByUid(int uid)
+        //{
+        //    return _context.Set<TasksGiven>().Where(tg => tg.User.Uid == uid).Select(TasksGiven => TasksGiven.Task).ToList();
+        //}
+        public ICollection<Tasks> GetTasksByUid(string uid)
         {
-            return _context.Set<TasksGiven>().Where(tg => tg.User.Uid == uid).Select(TasksGiven => TasksGiven.Task).ToList();
+            return _context.TasksGiven.Where(tg => tg.Tauid == uid).Select(tg => tg.Task).ToList();
         }
 
         public ICollection<Tasks> GetTasks()
         {
-            return _context.Set<Tasks>().OrderBy(t => t.Tid).ToList();
+            return _context.Tasks.OrderBy(t => t.Tid).ToList();
         }
 
         public bool TasksExistsByDue(DateTime date)
         {
-            return _context.Set<Tasks>().Any(t => t.Due == date);
+            return _context.Tasks.Any(t => t.Due == date);
         }
         public bool TaskExistsById(int tid)
         {
-            return _context.Set<Tasks>().Any(t => t.Tid == tid);
+            return _context.Tasks.Any(t => t.Tid == tid);
         }
-        public bool TasksExistsByUid(int uid)
+
+        //public bool TasksExistsByUid(int uid)
+        //{
+        //    return _context.Set<Users>().Any(u => u.Uid == uid);
+        //}
+
+        public bool TasksExistsByUid(string uid)
         {
-            return _context.Set<Users>().Any(u => u.Uid == uid);
+            return _context.Users.Any(au => au.Id == uid);
         }
 
         public bool CreateTask(Tasks task)
@@ -53,6 +64,7 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context.Add(task);
             return Save();
         }
+
         public bool UpdateTask(Tasks task)
         {
             _context.Update(task);
