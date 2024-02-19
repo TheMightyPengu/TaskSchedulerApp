@@ -32,7 +32,7 @@ namespace ToDoTask_SchedulerAppTest.Repository
         //}
         public ICollection<Tasks> GetTasksByUid(string uid)
         {
-            return _context.TasksGiven.Where(tg => tg.Tauid == uid).Select(tg => tg.Task).ToList();
+            return _context.TasksGiven.Where(tg => tg.TGauid == uid).Select(tg => tg.TGtask).ToList();
         }
 
         public ICollection<Tasks> GetTasks()

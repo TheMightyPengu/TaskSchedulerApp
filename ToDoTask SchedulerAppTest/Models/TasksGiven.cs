@@ -12,6 +12,7 @@ namespace ToDoTask_SchedulerAppTest.Models
     //}
     public class TasksGiven
     {
+        [Key]
         public string TGauid { get; set; }
         public int TGtid { get; set; }
         public virtual ApplicationUser TGau { get; set; }

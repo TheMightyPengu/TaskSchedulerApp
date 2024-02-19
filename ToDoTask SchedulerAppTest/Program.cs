@@ -13,48 +13,35 @@ using ToDoTask_SchedulerAppTest.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-
-builder.Services.AddDbContext<IdentityDbContext<ApplicationUser>>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-}, ServiceLifetime.Scoped);
+});
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<IdentityDbContext<ApplicationUser>>().AddDefaultTokenProviders();
-
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
-//builder.Services.AddScoped<IUsersRepository , UsersRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 builder.Services.AddScoped<IRemindersRepository, RemindersRepository>();
 builder.Services.AddScoped<RemindersServices>();
 builder.Services.AddScoped<TasksGivenServices>();
-builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 var app = builder.Build();
 
-if (args.Length == 1 && args[0].ToLower() == "seeddata")
-    SeedData(app);
-void SeedData(IHost app)
-{
-    var scopedFactory = app.Services.GetService<IServiceScopeFactory>();
 
-    using (var scope = scopedFactory.CreateScope())
-    {
-        var service = scope.ServiceProvider.GetService<Seed>();
-        service.SeedDataContext();
-    }
-}
+if (args.Length == 1 && args[0].ToLower() == "seeddata")
+    await SeedData(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -70,3 +57,13 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Make sure the SeedData method is asynchronous and awaited
+async Task SeedData(IHost app)
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var service = scope.ServiceProvider.GetRequiredService<Seed>();
+        await service.SeedDataContextAsync(); // Assuming this is an async method
+    }
+}

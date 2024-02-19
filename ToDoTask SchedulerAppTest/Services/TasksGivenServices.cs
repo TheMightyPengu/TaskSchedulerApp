@@ -39,6 +39,20 @@ namespace ToDoTask_SchedulerAppTest.Services
 
             return (true, null);
         }
+        public void DeleteTask(int taskId)
+        {
+            var remindersToDelete = _context.Reminders.Where(r => r.Rtid == taskId);
+            _context.Reminders.RemoveRange(remindersToDelete);
+
+            var tasksGivenToDelete = _context.TasksGiven.Where(tg => tg.TGtid == taskId);
+            _context.TasksGiven.RemoveRange(tasksGivenToDelete);
+
+            var taskToDelete = _context.Tasks.FirstOrDefault(t => t.Tid == taskId);
+            if (taskToDelete != null)
+                _context.Tasks.Remove(taskToDelete);
+            
+            _context.SaveChanges();
+        }
 
 
     }
