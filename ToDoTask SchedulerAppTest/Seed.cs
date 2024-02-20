@@ -16,19 +16,20 @@ namespace ToDoTask_SchedulerAppTest
         private ApplicationUser? _secondUser;
         private Tasks? _firstTask;
         private Tasks? _secondTask;
-
-        public Seed(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
+        private readonly ILogger<Seed> _logger;
+        public Seed(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext context, ILogger<Seed> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _context = context;
+            _logger = logger;
         }
 
         public async Task SeedDataContextAsync()
         {
-            await InitializeUsersAndTasksAsync();
             await SeedRolesAsync();
             await SeedUsersAsync();
+            await InitializeUsersAndTasksAsync();
             await SeedTasksAsync();
             await SeedRemindersAsync();
             await SeedTasksGivenAsync();
@@ -36,8 +37,8 @@ namespace ToDoTask_SchedulerAppTest
 
         private async Task InitializeUsersAndTasksAsync()
         {
-                _firstUser = await _userManager.FindByEmailAsync("user@example.com");
-                _secondUser = await _userManager.FindByEmailAsync("seconduser@example.com");
+                _firstUser = await _userManager.FindByEmailAsync("user1@example.com");
+                _secondUser = await _userManager.FindByEmailAsync("user2@example.com");
 
                 _firstTask = await _context.Tasks.OrderBy(t => t.Tid).FirstOrDefaultAsync();
                 _secondTask = await _context.Tasks.OrderBy(t => t.Tid).Skip(1).FirstOrDefaultAsync();
@@ -45,6 +46,7 @@ namespace ToDoTask_SchedulerAppTest
 
         private async Task SeedRolesAsync()
         {
+            System.Diagnostics.Debug.WriteLine("started creating roles");
             if (!await _roleManager.Roles.AnyAsync())
             {
                 var roles = new List<IdentityRole>
@@ -58,6 +60,7 @@ namespace ToDoTask_SchedulerAppTest
                     await _roleManager.CreateAsync(role);
                 }
             }
+            System.Diagnostics.Debug.WriteLine("stoped creating roles");
         }
 
         private async Task SeedUsersAsync()
@@ -67,51 +70,70 @@ namespace ToDoTask_SchedulerAppTest
                 // Admin user
                 var adminUser = new ApplicationUser
                 {
-                    UserName = "idk why i have this",
+                    UserName = "IdkWhyThisIsHere",
                     Email = "admin1@example.com",
                     Fullname = "I am the first seeded admin"
                 };
                 if (await _userManager.FindByEmailAsync(adminUser.Email) == null)
                 {
-                    await _userManager.CreateAsync(adminUser, "AdminPassword1");
-                    await _userManager.AddToRoleAsync(adminUser, "Admin");
+                    var result = await _userManager.CreateAsync(adminUser, "AdminPassword1");
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(adminUser, "Admin");
+                        _logger.LogInformation("Admin1 created");
+                    }else {_logger.LogWarning("Admin1 not created. Errors: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));}
                 }
 
                 var secondadminUser = new ApplicationUser
                 {
-                    UserName = "maybe i should make it the primary key",
+                    UserName = "maybeIshouldMakeItThePK",
                     Email = "admin2@example.com",
                     Fullname = "I am the second seeded admin"
                 };
                 if (await _userManager.FindByEmailAsync(secondadminUser.Email) == null)
                 {
-                    await _userManager.CreateAsync(secondadminUser, "AdminPassword2");
-                    await _userManager.AddToRoleAsync(secondadminUser, "Admin");
+                    var result = await _userManager.CreateAsync(secondadminUser, "AdminPassword2");
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(secondadminUser, "Admin");
+                        _logger.LogInformation("Admin2 created");
+                    }
+                    else { _logger.LogWarning("Admin1 not created. Errors: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description))); }
                 }
 
                 // General user
                 var generalUser = new ApplicationUser
                 {
-                    UserName = "maybe i should delete it",
+                    UserName = "MaybeItShouldDeleteIt",
                     Email = "user1@example.com",
                     Fullname = "I am the first seeded user"
                 };
                 if (await _userManager.FindByEmailAsync(generalUser.Email) == null)
                 {
-                    await _userManager.CreateAsync(generalUser, "UserPassword1");
-                    await _userManager.AddToRoleAsync(generalUser, "User");
+                    var result = await _userManager.CreateAsync(generalUser, "UserPassword1");
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(generalUser, "User");
+                        _logger.LogInformation("User1 created");
+                    }
+                    else { _logger.LogWarning("User1 not created. Errors: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description))); }
+
                 }
 
                 var secondgeneralUser = new ApplicationUser
                 {
-                    UserName = "i will just leave it be",
+                    UserName = "GonnaLeaveItBe",
                     Email = "user2@example.com",
                     Fullname = "I am the second seeded user"
                 };
                 if (await _userManager.FindByEmailAsync(secondgeneralUser.Email) == null)
                 {
-                    await _userManager.CreateAsync(secondgeneralUser, "UserPassword2");
-                    await _userManager.AddToRoleAsync(secondgeneralUser, "User");
+                    var result = await _userManager.CreateAsync(secondgeneralUser, "UserPassword2");
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(secondgeneralUser, "User");
+                        _logger.LogInformation("User2 created");
+                    }else { _logger.LogWarning("User2 not created. Errors: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description))); }
                 }
             }
         }

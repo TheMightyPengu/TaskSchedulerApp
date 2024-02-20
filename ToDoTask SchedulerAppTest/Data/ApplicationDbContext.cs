@@ -22,24 +22,12 @@ namespace ToDoTask_SchedulerAppTest.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<TasksGiven>().HasKey(tg => new { tg.TGauid, tg.TGtid });
-
-            //modelBuilder.Entity<TasksGiven>().HasOne(u => u.User).WithMany(tg => tg.TasksGiven).HasForeignKey(u => u.Tuid);
-            modelBuilder.Entity<TasksGiven>().HasOne(u => u.TGau).WithMany(tg => tg.TasksGiven).HasForeignKey(u => u.TGauid);
-            modelBuilder.Entity<TasksGiven>().HasOne(t => t.TGtask).WithMany(tg => tg.TasksGiven).HasForeignKey(t => t.TGtid).OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<TasksGiven>().HasOne(u => u.TGau).WithMany(tg => tg.TasksGiven).HasForeignKey(u => u.TGauid).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<TasksGiven>().HasOne(t => t.TGtask).WithMany(tg => tg.TasksGiven).HasForeignKey(t => t.TGtid).OnDelete(DeleteBehavior.Restrict);
 
 
-            modelBuilder.Entity<Reminders>().HasOne(r => r.Rtask).WithMany(t => t.Reminders)..OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<Reminders>().HasOne(t => t.Rau).WithMany().HasForeignKey(t => t.Rauid).OnDelete(DeleteBehavior.Restrict);
-
-            ////modelBuilder.Entity<Tasks>().HasMany(t => t.TasksGiven).WithOne(tg => tg.TGtask).HasForeignKey(tg => tg.TGtid).OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<ApplicationUser>().HasMany(au => au.TasksGiven).WithOne(tg => tg.TGau).HasForeignKey(tg => tg.TGauid).OnDelete(DeleteBehavior.NoAction);
-
-            //modelBuilder.Entity<Tasks>().HasOne(t => t.Tau).WithMany().HasForeignKey(t => t.Tauid).OnDelete(DeleteBehavior.Restrict);
-
-          
-
+            modelBuilder.Entity<Reminders>().HasOne(r => r.Rtask).WithMany().HasForeignKey(r => r.Rtid).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Reminders>().HasOne(r => r.Rau).WithMany().HasForeignKey(r => r.Rauid).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

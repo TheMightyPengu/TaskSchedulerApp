@@ -12,8 +12,8 @@ using ToDoTask_SchedulerAppTest.Data;
 namespace ToDoTask_SchedulerAppTest.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240219155840_CascadeBehavior3")]
-    partial class CascadeBehavior3
+    [Migration("20240220111849_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -355,13 +355,13 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "Rau")
                         .WithMany()
                         .HasForeignKey("Rauid")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.Tasks", "Rtask")
                         .WithMany()
                         .HasForeignKey("Rtid")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Rau");
@@ -374,7 +374,7 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "Tau")
                         .WithMany()
                         .HasForeignKey("Tauid")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Tau");
@@ -385,13 +385,13 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "TGau")
                         .WithMany("TasksGiven")
                         .HasForeignKey("TGauid")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.Tasks", "TGtask")
                         .WithMany("TasksGiven")
                         .HasForeignKey("TGtid")
-                        .OnDelete(DeleteBehavior.SetNull)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("TGau");

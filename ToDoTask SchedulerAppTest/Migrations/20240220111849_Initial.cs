@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ToDoTask_SchedulerAppTest.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,8 +187,7 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReminderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Rauid = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Rtid = table.Column<int>(type: "int", nullable: false),
-                    RtaskTid = table.Column<int>(type: "int", nullable: false)
+                    Rtid = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,13 +197,13 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                         column: x => x.Rauid,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Reminders_Tasks_RtaskTid",
-                        column: x => x.RtaskTid,
+                        name: "FK_Reminders_Tasks_Rtid",
+                        column: x => x.Rtid,
                         principalTable: "Tasks",
                         principalColumn: "Tid",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -222,13 +221,13 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                         column: x => x.TGauid,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TasksGiven_Tasks_TGtid",
                         column: x => x.TGtid,
                         principalTable: "Tasks",
                         principalColumn: "Tid",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -276,9 +275,9 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                 column: "Rauid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reminders_RtaskTid",
+                name: "IX_Reminders_Rtid",
                 table: "Reminders",
-                column: "RtaskTid");
+                column: "Rtid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_Tauid",

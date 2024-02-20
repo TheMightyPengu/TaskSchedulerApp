@@ -20,8 +20,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 4;
+
+}).AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
 builder.Services.AddTransient<Seed>();
@@ -58,12 +61,11 @@ app.MapControllers();
 
 app.Run();
 
-// Make sure the SeedData method is asynchronous and awaited
 async Task SeedData(IHost app)
 {
     using (var scope = app.Services.CreateScope())
     {
         var service = scope.ServiceProvider.GetRequiredService<Seed>();
-        await service.SeedDataContextAsync(); // Assuming this is an async method
+        await service.SeedDataContextAsync();
     }
 }

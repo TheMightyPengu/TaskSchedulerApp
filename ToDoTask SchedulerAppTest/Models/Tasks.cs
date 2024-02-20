@@ -20,8 +20,9 @@ namespace ToDoTask_SchedulerAppTest.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime Due { get; set; }
-        public string Tauid { get; set; }
-        public ApplicationUser Tau { get; set; }
+
+        //public string Tauid { get; set; }
+        //public ApplicationUser Tau { get; set; }
         public ICollection<TasksGiven> TasksGiven { get; set; }
     }
 

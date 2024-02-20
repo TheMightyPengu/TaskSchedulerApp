@@ -12,8 +12,8 @@ using ToDoTask_SchedulerAppTest.Data;
 namespace ToDoTask_SchedulerAppTest.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240219142621_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240220130841_ChangedTasksModel")]
+    partial class ChangedTasksModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -242,9 +242,6 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.Property<DateTime>("ReminderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RtaskTid")
-                        .HasColumnType("int");
-
                     b.Property<int>("Rtid")
                         .HasColumnType("int");
 
@@ -252,7 +249,7 @@ namespace ToDoTask_SchedulerAppTest.Migrations
 
                     b.HasIndex("Rauid");
 
-                    b.HasIndex("RtaskTid");
+                    b.HasIndex("Rtid");
 
                     b.ToTable("Reminders");
                 });
@@ -272,17 +269,11 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.Property<DateTime>("Due")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Tauid")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Tid");
-
-                    b.HasIndex("Tauid");
 
                     b.ToTable("Tasks");
                 });
@@ -358,13 +349,13 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "Rau")
                         .WithMany()
                         .HasForeignKey("Rauid")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.Tasks", "Rtask")
                         .WithMany()
-                        .HasForeignKey("RtaskTid")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("Rtid")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Rau");
@@ -372,29 +363,18 @@ namespace ToDoTask_SchedulerAppTest.Migrations
                     b.Navigation("Rtask");
                 });
 
-            modelBuilder.Entity("ToDoTask_SchedulerAppTest.Models.Tasks", b =>
-                {
-                    b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "Tau")
-                        .WithMany()
-                        .HasForeignKey("Tauid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tau");
-                });
-
             modelBuilder.Entity("ToDoTask_SchedulerAppTest.Models.TasksGiven", b =>
                 {
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.ApplicationUser", "TGau")
                         .WithMany("TasksGiven")
                         .HasForeignKey("TGauid")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ToDoTask_SchedulerAppTest.Models.Tasks", "TGtask")
                         .WithMany("TasksGiven")
                         .HasForeignKey("TGtid")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("TGau");
