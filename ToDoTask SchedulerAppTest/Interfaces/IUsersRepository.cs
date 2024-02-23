@@ -6,13 +6,13 @@
 //    {
 //        ICollection<Users> GetUsers();
 //        Users GetUserById(int uid);
-//        Users GetUserByUsername(string username);
-//        Users GetUserByFullname(string fullName);
+//        Users GetUserByUsername(string UserName);
+//        Users GetUserByFullname(string FullName);
 //        ICollection<Users> GetUsersByTid(int tid);
 
 //        bool UserExistsById (int uid);
-//        bool UserExistsByUsername(string username);
-//        bool UserExistsByFullname(string fullName);
+//        bool UserExistsByUsername(string UserName);
+//        bool UserExistsByFullname(string FullName);
 //        bool UserExistsByTid(int tid);
 //        bool CreateUser(Users user);
 //        bool UpdateUser(Users user);

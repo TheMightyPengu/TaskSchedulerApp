@@ -10,10 +10,14 @@ namespace ToDoTask_SchedulerAppTest.Repository
     public class TasksRepository : ITasksRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITasksGivenRepository _tasksgivenRepository;
+        private readonly IRemindersRepository _remindersRepository;
 
-        public TasksRepository(ApplicationDbContext context)
+        public TasksRepository(ApplicationDbContext context, ITasksGivenRepository tasksgivenRepository, IRemindersRepository remindersRepository)
         {
             _context = context;
+            _tasksgivenRepository = tasksgivenRepository;
+            _remindersRepository = remindersRepository;
         }
 
         public ICollection<Tasks> GetTasksByDue(DateTime date)
@@ -73,6 +77,15 @@ namespace ToDoTask_SchedulerAppTest.Repository
 
         public bool DeleteTask(Tasks task)
         {
+            var tasksgiven = _tasksgivenRepository.GetTasksGivenByTid(task.Tid);
+            var reminders = _remindersRepository.GetRemindersByTid(task.Tid);
+
+            foreach (var taskgiven in tasksgiven)
+                _context.TasksGiven.Remove(taskgiven);
+            
+            foreach (var reminder in reminders)
+                _context.Reminders.Remove(reminder);
+
             _context.Remove(task);
             return Save();
         }

@@ -49,13 +49,13 @@
 //            return Ok(user);
 //        }
 
-//        [HttpGet("username/{username}")]
-//        public IActionResult GetUserByUsername(string username)
+//        [HttpGet("UserName/{UserName}")]
+//        public IActionResult GetUserByUsername(string UserName)
 //        {
-//            if (!_usersRepository.UserExistsByUsername(username))
+//            if (!_usersRepository.UserExistsByUsername(UserName))
 //                return NotFound();
 
-//            var user = _mapper.Map<UsersDto>(_usersRepository.GetUserByUsername(username));
+//            var user = _mapper.Map<UsersDto>(_usersRepository.GetUserByUsername(UserName));
 
 //            if (!ModelState.IsValid)
 //                return BadRequest(ModelState);
@@ -63,13 +63,13 @@
 //            return Ok(user);
 //        }
 
-//        [HttpGet("fullname/{fullname}")]
-//        public IActionResult GetUserByFullname(string fullname)
+//        [HttpGet("FullName/{FullName}")]
+//        public IActionResult GetUserByFullname(string FullName)
 //        {
-//            if (!_usersRepository.UserExistsByFullname(fullname))
+//            if (!_usersRepository.UserExistsByFullname(FullName))
 //                return NotFound();
 
-//            var user = _mapper.Map<UsersDto>(_usersRepository.GetUserByFullname(fullname));
+//            var user = _mapper.Map<UsersDto>(_usersRepository.GetUserByFullname(FullName));
 
 //            if (!ModelState.IsValid)
 //                return BadRequest(ModelState);
@@ -97,11 +97,11 @@
 //        [HttpPost("createuser/")]
 //        public IActionResult CreateUser([FromBody, Required]UsersDto CreateUser)
 //        {
-//            var users = _usersRepository.GetUsers().Where(u => u.Username.Trim().ToUpper()== CreateUser.Username.Trim().ToUpper()).FirstOrDefault();
+//            var users = _usersRepository.GetUsers().Where(u => u.UserName.Trim().ToUpper()== CreateUser.UserName.Trim().ToUpper()).FirstOrDefault();
 
 //            if (users != null)
 //            {
-//                ModelState.AddModelError("", "Username already exists");
+//                ModelState.AddModelError("", "UserName already exists");
 //                return StatusCode(422, ModelState);
 //            }
 

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using ToDoTask_SchedulerAppTest.Data;
 using ToDoTask_SchedulerAppTest.Interfaces;
 using ToDoTask_SchedulerAppTest.Models;
@@ -16,9 +17,9 @@ namespace ToDoTask_SchedulerAppTest.Repository
             _context = context;
         }
 
-        public ICollection<Reminders> GetRemindersByDate(DateTime date)
+        public ICollection<Reminders> GetReminders()
         {
-            return _context.Reminders.Include(r => r.Rtask).Where(r => r.ReminderDate == date).ToList();
+            return _context.Reminders.Include(r => r.Rtask).OrderBy(r => r.Rid).ToList();
         }
 
         public Reminders GetReminderById(int rid)
@@ -26,30 +27,25 @@ namespace ToDoTask_SchedulerAppTest.Repository
             return _context.Reminders.Include(r => r.Rtask).Where(r => r.Rid == rid).FirstOrDefault();
         }
 
+        public ICollection<Reminders> GetRemindersByDate(DateTime date)
+        {
+            return _context.Reminders.Include(r => r.Rtask).Where(r => r.ReminderDate == date).ToList();
+        }
+
         public ICollection<Reminders> GetRemindersByUid(string uid)
         {
             return _context.Reminders.Include(r => r.Rtask).Where(r => r.Rauid == uid).ToList();
         }
 
-        public ICollection<Reminders> GetReminders()
+        public ICollection<Reminders> GetRemindersByTid(int tid)
         {
-            return _context.Reminders.Include(r => r.Rtask).OrderBy(r => r.Rid).ToList();
+            return _context.Reminders.Where(r => r.Rtid == tid).ToList();
         }
 
-        public bool ReminderExistsById(int rid)
-        {
-            return _context.Reminders.Any(r => r.Rid == rid);
-        }
-        public bool RemindersExistsByUid(string uid)
-        {
-            return _context.Reminders.Any(au => au.Rauid == uid);
-        }
-        public bool RemindersExistsByDate(DateTime date)
-        {
-            return _context.Reminders.Any(r => r.ReminderDate == date);
-
-        }
-
+        public bool ReminderExistsById(int rid) {              return _context.Reminders.Any(r => r.Rid == rid);                }
+        public bool RemindersExistsByUid(string uid) {         return _context.Reminders.Any(au => au.Rauid == uid);            }
+        public bool RemindersExistsByDate(DateTime date) {     return _context.Reminders.Any(r => r.ReminderDate == date);      }
+        public bool RemindersExistsByTid(int tid) {            return _context.Reminders.Any(r => r.Rtid == tid);               }
         public bool CreateReminder(Reminders reminder)
         {
             _context.Reminders.Add(reminder);

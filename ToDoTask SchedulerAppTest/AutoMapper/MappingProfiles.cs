@@ -11,6 +11,7 @@ public class MappingProfiles : Profile
     {
         CreateMap<ApplicationUser, UsersDto>();
         CreateMap<UsersDto, ApplicationUser>();
+        CreateMap<ApplicationUser, GetUsersDto>();
 
         CreateMap<Tasks, TasksDto>();
         CreateMap<TasksDto, Tasks>();

@@ -18,8 +18,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>{
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 4;
 
@@ -34,8 +38,7 @@ builder.Services.AddScoped<ITasksGivenRepository, TasksGivenRepository>();
 builder.Services.AddScoped<IRemindersRepository, RemindersRepository>();
 builder.Services.AddScoped<RemindersServices>();
 builder.Services.AddScoped<TasksGivenServices>();
-
-
+builder.Services.AddScoped<ApplicationUserServices>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -41,7 +43,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(tasks);
         }
 
-        [HttpGet("uid/{uid}")]
+        [HttpGet("uid/{TGauid}")]
         public IActionResult GetTasksByUid(string TGauid)
         {
             if (!ModelState.IsValid)
@@ -53,7 +55,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(_mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasksGivenByUid(TGauid)));
         }
 
-        [HttpGet("id/{uid}/{tid}")]
+        [HttpGet("id/{TGauid}/{TGtid}")]
         public IActionResult GetTaskGivenByUidAndTid(String TGauid, int TGtid)
         {
             if (!ModelState.IsValid)
@@ -65,7 +67,19 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(_mapper.Map<TasksGivenDto>(_tasksgivenRepository.GetTaskGivenByUidAndTid(TGauid, TGtid)));
         }
 
-        [HttpGet("tid/{tid}")]
+        [HttpGet("id/{TGtid}")]
+        public IActionResult GetTaskGivenByTid(int TGtid)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_tasksgivenRepository.TasksGivenExistsByTid(TGtid))
+                return NotFound();
+
+            return Ok(_mapper.Map<List<TasksGivenDto>>(_tasksgivenRepository.GetTasksGivenByTid(TGtid)));
+        }
+
+        [HttpGet("tid/{TGtid}")]
         public IActionResult GetUsersByTid(int TGtid)
         {
             if (!ModelState.IsValid)
@@ -80,12 +94,14 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         }
 
         [HttpPost("assigntask/")]
-        public IActionResult CreateTaskGiven([FromBody, Required] TasksGivenUpdateDto newTaskGiven, [FromQuery, Required]string newTGauid, [FromQuery, Required]int newTGtid)
+        public IActionResult CreateTaskGiven([FromQuery, Required]string newTGauid, [FromQuery, Required]int newTGtid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (canCreate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(newTGauid, newTGtid, newTaskGiven);
+            TasksGivenUpdateDto newTaskGiven = null;
+            bool isUpdating = false;
+            var (canCreate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(newTGauid, newTGtid, newTaskGiven, isUpdating);
            
             if (!canCreate)
             {
@@ -109,8 +125,9 @@ namespace ToDoTask_SchedulerAppTest.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var (canUpdate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(TGauid, TGtid, newTaskGiven);
+                
+            bool isUpdating = true;
+            var (canUpdate, errorMessage) = _tasksgivenServices.ValidateTaskGivenEntities(TGauid, TGtid, newTaskGiven, isUpdating);
             if (!canUpdate)
             {
                 ModelState.AddModelError("", errorMessage);
@@ -121,6 +138,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
 
             if (!_tasksgivenRepository.UpdateTaskGiven(taskgiven, TGauid, TGtid))
                 return StatusCode(500, ModelState);
+
 
             return NoContent();
         }

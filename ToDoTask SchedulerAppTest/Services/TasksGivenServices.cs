@@ -24,17 +24,17 @@ namespace ToDoTask_SchedulerAppTest.Services
             _tasksgivenRepository = tasksgivenRepository;
         }
 
-        public (bool canUpdate, string? errorMessage) ValidateTaskGivenEntities(string newTGauid, int newTGtid, TasksGivenUpdateDto newTaskGiven)
+        public (bool canUpdate, string? errorMessage) ValidateTaskGivenEntities(string newTGauid, int newTGtid, TasksGivenUpdateDto? TaskGiven, bool isUpdating)
         {
             if (!_context.Users.Any(u => u.Id == newTGauid))
                 return (false, "User not found.");
             else if (!_context.Tasks.Any(t => t.Tid == newTGtid))
                 return (false, "Task not found.");
 
-            if (!_tasksgivenRepository.TaskGivenExistsByUidAndTid(newTGauid, newTGtid))
+            if (isUpdating && !_tasksgivenRepository.TaskGivenExistsByUidAndTid(TaskGiven.TGauid, TaskGiven.TGtid))
                 return (false, "TaskGiven not found");
 
-            if (_tasksgivenRepository.TaskGivenExistsByUidAndTid(newTaskGiven.TGauid, newTaskGiven.TGtid))
+            if (isUpdating && _tasksgivenRepository.TaskGivenExistsByUidAndTid(newTGauid, newTGtid))
                 return (false, "TaskGiven already exists");
 
             return (true, null);

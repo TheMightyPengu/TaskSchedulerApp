@@ -32,6 +32,11 @@ namespace ToDoTask_SchedulerAppTest.Repository
             return _context.TasksGiven.Include(tg => tg.TGau).Include(tg => tg.TGtask).FirstOrDefault(tg => tg.TGauid == uid && tg.TGtid == tid);
         }
 
+        public ICollection<TasksGiven> GetTasksGivenByTid(int tid)
+        {
+            return _context.TasksGiven.Where(tg => tg.TGtid == tid).ToList();
+        }
+
         //public ICollection<Users> GetUsersByTid(int tid)
         //{
         //    return _context.TasksGiven.Where(tg => tg.TGtid == tid).Select(tg => tg.TGauid).ToList();
@@ -52,6 +57,10 @@ namespace ToDoTask_SchedulerAppTest.Repository
         public bool TaskGivenExistsByUidAndTid(string uid, int tid)
         {
             return _context.TasksGiven.Any(tg => tg.TGauid == uid && tg.TGtid == tid);
+        }
+        public bool TasksGivenExistsByTid(int tid)
+        {
+            return _context.TasksGiven.Any(tg => tg.TGtid == tid);
         }
 
         public bool CreateTaskGiven(string newTGauid, int newTGtid)

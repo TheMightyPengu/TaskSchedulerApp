@@ -5,7 +5,6 @@ namespace ToDoTask_SchedulerAppTest.Dto
 {
     public class TasksDto
     {
-        [Key]
         public int Tid { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }

@@ -73,7 +73,48 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             return Ok(reminder);
         }
 
-        [HttpPut("updatereminder/{rid}")]
+        [HttpGet("tid/{tid}")]
+        public IActionResult GetRemindersByTid(int tid)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_remindersRepository.RemindersExistsByTid(tid))
+                return NotFound();
+
+            var reminder = _mapper.Map<List<RemindersDto>>(_remindersRepository.GetRemindersByTid(tid));
+
+            return Ok(reminder);
+        }
+        
+        [HttpPost("createreminder")]
+        public IActionResult CreateReminder([FromBody, Required] RemindersCreateDto newReminder)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (canCreate, errorMessage) = _remindersServices.ValidateReminderEntities(newReminder.Rauid, newReminder.Rtid, newReminder.ReminderDate);
+            if (!canCreate)
+            {
+                ModelState.AddModelError("", errorMessage);
+                return BadRequest(ModelState);
+            }
+
+            var reminder = _mapper.Map<Reminders>(newReminder);
+
+            reminder.Rauid = newReminder.Rauid;
+            reminder.Rtid = newReminder.Rtid;
+
+            if (!_remindersRepository.CreateReminder(reminder))
+            {
+                ModelState.AddModelError("", "Unable to save the reminder");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Success");
+        }
+
+        [HttpPut("updatereminder/")]
         public IActionResult UpdateReminder([FromQuery, Required]int rid, [FromBody, Required]RemindersUpdateDto newReminder)
         {
             if (!ModelState.IsValid)
@@ -83,7 +124,7 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             if (reminderToUpdate == null)
                 return NotFound($"The reminder you want to change({rid}) does not exist.");
 
-            var (canUpdate, errorMessage) = _remindersServices.ValidateReminderEntities(newReminder.Rauid, newReminder.Rtid);
+            var (canUpdate, errorMessage) = _remindersServices.ValidateReminderEntities(newReminder.Rauid, newReminder.Rtid, newReminder.ReminderDate);
             if (!canUpdate)
             {
                 ModelState.AddModelError("", errorMessage);
@@ -102,33 +143,6 @@ namespace ToDoTask_SchedulerAppTest.Controllers
             }
 
             return NoContent();
-        }
-
-        [HttpPost("createreminder")]
-        public IActionResult CreateReminder([FromBody, Required] RemindersCreateDto newReminder)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var (canCreate, errorMessage) = _remindersServices.ValidateReminderEntities(newReminder.Rauid, newReminder.Rtid);
-            if (!canCreate)
-            {
-                ModelState.AddModelError("", errorMessage);
-                return BadRequest(ModelState);
-            }
-
-            var reminder = _mapper.Map<Reminders>(newReminder);
-
-            reminder.Rauid = newReminder.Rauid;
-            reminder.Rtid = newReminder.Rtid;
-
-            if (!_remindersRepository.CreateReminder(reminder))
-            {
-                ModelState.AddModelError("", "Unable to save the reminder");
-                return StatusCode(500, ModelState);
-            }
-
-            return CreatedAtAction(nameof(GetReminderById), new { rid = reminder.Rid }, _mapper.Map<RemindersDto>(reminder));
         }
 
         [HttpDelete("deletereminder/")]

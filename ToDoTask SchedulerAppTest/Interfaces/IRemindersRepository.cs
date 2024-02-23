@@ -8,8 +8,10 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         Reminders GetReminderById(int rid);
         ICollection<Reminders> GetRemindersByUid(string uid);
         ICollection<Reminders> GetRemindersByDate(DateTime date);
+        ICollection<Reminders> GetRemindersByTid(int tid);
         bool ReminderExistsById(int rid);
         bool RemindersExistsByUid(string uid);
+        bool RemindersExistsByTid(int tid);
         bool RemindersExistsByDate(DateTime date);
         bool CreateReminder(Reminders reminder);
         bool UpdateReminder(Reminders reminder);

@@ -21,14 +21,14 @@
 //            return _context.Set<Users>().Where(u => u.Uid == uid).FirstOrDefault();
 //        }
 
-//        public Users GetUserByUsername(string username)
+//        public Users GetUserByUsername(string UserName)
 //        {
-//            return _context.Set<Users>().Where(u => u.Username == username).FirstOrDefault();
+//            return _context.Set<Users>().Where(u => u.UserName == UserName).FirstOrDefault();
 //        }
 
-//        public Users GetUserByFullname(string fullName)
+//        public Users GetUserByFullname(string FullName)
 //        {
-//            return _context.Set<Users>().Where(u => u.Fullname == fullName).FirstOrDefault();
+//            return _context.Set<Users>().Where(u => u.FullName == FullName).FirstOrDefault();
 //        }
 
 //        public ICollection<Users> GetUsers()
@@ -44,13 +44,13 @@
 //        {
 //            return _context.Set<Users>().Any(u => u.Uid == uid);
 //        }
-//        public bool UserExistsByUsername(string userName)
+//        public bool UserExistsByUsername(string UserName)
 //        {
-//            return _context.Set<Users>().Any(u => u.Username == userName);
+//            return _context.Set<Users>().Any(u => u.UserName == UserName);
 //        }
-//        public bool UserExistsByFullname(string fullName)
+//        public bool UserExistsByFullname(string FullName)
 //        {
-//            return _context.Set<Users>().Any(u => u.Fullname == fullName);
+//            return _context.Set<Users>().Any(u => u.FullName == FullName);
 //        }
 //        public bool UserExistsByTid(int tid)
 //        {

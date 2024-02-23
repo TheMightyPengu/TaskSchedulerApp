@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using ToDoTask_SchedulerAppTest.Models;
+﻿using ToDoTask_SchedulerAppTest.Models;
 
 namespace ToDoTask_SchedulerAppTest.Interfaces
 {
@@ -8,10 +7,12 @@ namespace ToDoTask_SchedulerAppTest.Interfaces
         ICollection<TasksGiven> GetTasksGiven();
         ICollection<TasksGiven> GetTasksGivenByUid(string uid);
         ICollection<ApplicationUser> GetUsersByTid(int tid);
+        ICollection<TasksGiven> GetTasksGivenByTid(int tid);
         TasksGiven GetTaskGivenByUidAndTid(string Tuid, int Ttid);
         bool TasksGivenExistsByUid(string uid);
         bool UsersExistsByTid(int tid);
         bool TaskGivenExistsByUidAndTid(string uid, int tid);
+        bool TasksGivenExistsByTid(int tid);
         bool CreateTaskGiven(string TGauid, int TGtid);
         bool UpdateTaskGiven(TasksGiven taskGiven, string newApplicationUserId, int newTaskId);
         //bool CreateTaskGiven(Users UidEntity, Tasks TidEntity);

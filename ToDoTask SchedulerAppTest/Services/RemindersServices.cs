@@ -17,7 +17,7 @@ namespace ToDoTask_SchedulerAppTest.Services
             _context = context;
         }
 
-        public (bool canCreate, string? ErrorMessage) ValidateReminderEntities(string Ruid, int Rtid)
+        public (bool canCreate, string? ErrorMessage) ValidateReminderEntities(string Ruid, int Rtid, DateTime reminderDate)
         {
             if (_context.Users.Find(Ruid) == null)
                 return (false, "User not found.");
@@ -25,10 +25,13 @@ namespace ToDoTask_SchedulerAppTest.Services
                 return (false, "Task not found.");
 
             var userHasTaskAssigned = _context.TasksGiven.Any(tg => tg.TGauid == Ruid && tg.TGtid == Rtid);
-
             if (!userHasTaskAssigned)
                 return (false, "User does not have the specified task assigned.");
-            
+
+            var reminderExists = _context.Reminders.Any(r => r.Rauid == Ruid && r.Rtid == Rtid && r.ReminderDate.Date == reminderDate.Date);
+            if (reminderExists)
+                return (false, "User already has a reminder set for this task on the specified date.");
+
             return (true, null);
         }
 

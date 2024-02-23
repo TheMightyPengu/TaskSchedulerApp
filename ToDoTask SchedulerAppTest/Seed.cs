@@ -72,7 +72,7 @@ namespace ToDoTask_SchedulerAppTest
                 {
                     UserName = "IdkWhyThisIsHere",
                     Email = "admin1@example.com",
-                    Fullname = "I am the first seeded admin"
+                    FullName = "I am the first seeded admin"
                 };
                 if (await _userManager.FindByEmailAsync(adminUser.Email) == null)
                 {
@@ -88,7 +88,7 @@ namespace ToDoTask_SchedulerAppTest
                 {
                     UserName = "maybeIshouldMakeItThePK",
                     Email = "admin2@example.com",
-                    Fullname = "I am the second seeded admin"
+                    FullName = "I am the second seeded admin"
                 };
                 if (await _userManager.FindByEmailAsync(secondadminUser.Email) == null)
                 {
@@ -106,7 +106,7 @@ namespace ToDoTask_SchedulerAppTest
                 {
                     UserName = "MaybeItShouldDeleteIt",
                     Email = "user1@example.com",
-                    Fullname = "I am the first seeded user"
+                    FullName = "I am the first seeded user"
                 };
                 if (await _userManager.FindByEmailAsync(generalUser.Email) == null)
                 {
@@ -124,7 +124,7 @@ namespace ToDoTask_SchedulerAppTest
                 {
                     UserName = "GonnaLeaveItBe",
                     Email = "user2@example.com",
-                    Fullname = "I am the second seeded user"
+                    FullName = "I am the second seeded user"
                 };
                 if (await _userManager.FindByEmailAsync(secondgeneralUser.Email) == null)
                 {
