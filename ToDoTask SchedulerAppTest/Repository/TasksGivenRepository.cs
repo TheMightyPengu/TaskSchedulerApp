@@ -136,6 +136,10 @@ namespace ToDoTask_SchedulerAppTest.Repository
 
         public bool DeleteTaskGiven(TasksGiven taskgiven)
         {
+            var reminders = _context.Reminders.Where(r => r.Rauid == taskgiven.TGauid && r.Rtid == taskgiven.TGtid).ToList();
+            if (reminders.Any())
+                _context.Reminders.RemoveRange(reminders);
+
             _context.Remove(taskgiven);
             return Save();
         }

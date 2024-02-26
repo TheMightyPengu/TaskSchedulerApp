@@ -33,7 +33,6 @@ namespace ToDoTask_SchedulerAppTest.Services
 
             }
             catch (Exception ) {
-
             }
         }
 

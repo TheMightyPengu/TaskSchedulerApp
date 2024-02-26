@@ -28,7 +28,7 @@ namespace ToDoTask_SchedulerAppTest.Services
             if (!userHasTaskAssigned)
                 return (false, "User does not have the specified task assigned.");
 
-            var reminderExists = _context.Reminders.Any(r => r.Rauid == Ruid && r.Rtid == Rtid && r.ReminderDate.Date == reminderDate.Date);
+            var reminderExists = _context.Reminders.Any(r => r.Rauid == Ruid && r.Rtid == Rtid && r.ReminderDate == reminderDate);
             if (reminderExists)
                 return (false, "User already has a reminder set for this task on the specified date.");
 

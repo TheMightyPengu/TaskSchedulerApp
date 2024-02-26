@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using ToDoTask_SchedulerAppTest;
 using ToDoTask_SchedulerAppTest.AutoMapper;
 using ToDoTask_SchedulerAppTest.Data;
@@ -40,8 +41,15 @@ builder.Services.AddScoped<RemindersServices>();
 builder.Services.AddScoped<TasksGivenServices>();
 builder.Services.AddScoped<ApplicationUserServices>();
 
+builder.Services.AddHostedService<AlarmCheckServices>();
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var app = builder.Build();
 
