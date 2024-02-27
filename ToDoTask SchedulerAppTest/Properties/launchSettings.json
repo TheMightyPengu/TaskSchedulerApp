@@ -4,22 +4,12 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
+      "commandLineArgs": "seeddata",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5102"
-    },
-    "https": {
-      "commandName": "Project",
-      "commandLineArgs": "seeddata",
-      "launchBrowser": true,
-      "launchUrl": "swagger",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7003;http://localhost:5102"
     },
     "IIS Express": {
       "commandName": "IISExpress",
